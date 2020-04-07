@@ -9,23 +9,39 @@ connect.then((db) => {
   console.log('Connected correctly to server');
 
   Dishes.create({
-    name: 'Uthappiuzza',
+    name: 'Uthappizza',
     description: 'test'
   })
   .then((dish) => {
-    console.log(dish);
+      console.log(dish);
 
-    return Dishes.find({}).exec();
+      return Dishes.findByIdAndUpdate(dish._id, {
+          $set: { description: 'Updated test'}
+      },{
+          new: true
+      })
+      .exec();
   })
-  .then((dishes) => {
-    console.log(dishes);
+  .then((dish) => {
+      console.log(dish);
 
-    return Dishes.remove({});
+      dish.comments.push({
+          rating: 5,
+          comment: 'I\'m getting a sinking feeling!',
+          author: 'Leonardo di Carpaccio'
+      });
+
+      return dish.save();
+  })
+  .then((dish) => {
+      console.log(dish);
+
+      return Dishes.remove({});
   })
   .then(() => {
-    return mongoose.connection.close();
+      return mongoose.connection.close();
   })
   .catch((err) => {
-    console.log('ERRORS', err);
+      console.log(err);
   });
 });
